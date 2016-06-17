@@ -51,6 +51,11 @@ namespace Paralelismo {
                 }
                 return;
             }
+
+            Task backgroundWriteTask = new Task(() => {
+                NewNotepad.SaveFile(dlgSave.FileName, textBox.Text);
+            });
+            backgroundWriteTask.Start();
         }
 
         private static void ThreadSafeFormControl(Control destControl, Action action) {
