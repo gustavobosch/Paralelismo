@@ -11,6 +11,7 @@ using System.Windows.Forms;
 
 namespace Paralelismo {
     public partial class NewNotepad : Form {
+
         public NewNotepad() {
             InitializeComponent();
         }
@@ -20,28 +21,94 @@ namespace Paralelismo {
         }
 
         private void mOpen_Click(object sender, EventArgs e) {
-            dlgOpen.ShowDialog();
+            DialogResult res = dlgOpen.ShowDialog();
             if (String.IsNullOrEmpty(dlgOpen.FileName)) {
-                MessageBox.Show("Nenhum nome foi especificado");
+                if (res != DialogResult.Cancel) {
+                    MessageBox.Show("Nenhum nome foi especificado");
+                }
                 return;
             }
 
-            FileStream fs = new FileStream(dlgOpen.FileName, FileMode.Open, FileAccess.Read);
-            using (StreamReader reader = new StreamReader(fs, Encoding.UTF8)){
-                textBox.Text = reader.ReadToEnd();
-            }
+            textBox.Enabled = false;
+
+            Task backgroundReadTask = new Task(() => {
+
+                string content = NewNotepad.LoadFile(dlgOpen.FileName);
+                NewNotepad.ThreadSafeFormControl(textBox, () => {
+                    textBox.Text = (content == null) ? "" : content;
+                    textBox.Enabled = true;
+                });
+
+            });
+            backgroundReadTask.Start();
         }
 
         private void mSave_Click(object sender, EventArgs e) {
-            dlgSave.ShowDialog();
+            DialogResult res = dlgSave.ShowDialog();
             if (String.IsNullOrEmpty(dlgSave.FileName)) {
-                MessageBox.Show("Nenhum nome foi especificado");
+                if (res != DialogResult.Cancel) {
+                    MessageBox.Show("Nenhum nome foi especificado");
+                }
+                return;
+            }
+        }
+
+        private static void ThreadSafeFormControl(Control destControl, Action action) {
+            if (destControl.InvokeRequired) {
+                destControl.Invoke(action);
+            } else {
+                action.Invoke();
+            }
+        }
+
+        private static string LoadFile(string filename) {
+            FileStream fs;
+            try {
+                fs = new FileStream(filename, FileMode.Open, FileAccess.Read);
+            } catch (FileNotFoundException fnfe) {
+                MessageBox.Show("Arquivo não encontrado.");
+                return null;
+            } catch (UnauthorizedAccessException uae) {
+                MessageBox.Show("Você não tem permissão para abrir o arquivo especificado.");
+                return null;
+            } catch (SystemException se) {
+                MessageBox.Show("Erro ao abrir o arquivo: " + se.Message);
+                return null;
+            }
+
+            try {
+                using (StreamReader reader = new StreamReader(fs, Encoding.UTF8)) {
+                    string text = reader.ReadToEnd();
+                    return text.Substring(0, Math.Min(text.Length, 65536));
+                }
+            } catch (IOException ioe) {
+                MessageBox.Show("Erro durante a leitura do arquivo.");
+                return null;
+            }
+        }
+
+        private static void SaveFile(string filename, string data) {
+            FileStream fs;
+            try {
+                fs = new FileStream(filename, FileMode.Create, FileAccess.Write);
+            } catch (FileNotFoundException fnfe) {
+                MessageBox.Show("Arquivo não encontrado.");
+                return;
+            } catch (UnauthorizedAccessException uae) {
+                MessageBox.Show("Você não tem permissão para abrir o arquivo especificado.");
+                return;
+            } catch (SystemException se) {
+                MessageBox.Show("Erro ao abrir o arquivo: " + se.Message);
                 return;
             }
 
-            FileStream fs = new FileStream(dlgSave.FileName, FileMode.Create, FileAccess.Write);
-            using (StreamWriter writer = new StreamWriter(fs, Encoding.UTF8)) {
-                writer.Write(textBox.Text);
+            try {
+                using (StreamWriter writer = new StreamWriter(fs, Encoding.UTF8)) {
+                    writer.Write(data);
+                }
+            } catch (IOException ioe) {
+                MessageBox.Show("Erro durante a gravação do arquivo.");
+                return;
             }
         }
     }
