@@ -24,8 +24,8 @@
         /// </summary>
         private void InitializeComponent() {
             this.menu = new System.Windows.Forms.MenuStrip();
-            this.openFileDialog1 = new System.Windows.Forms.OpenFileDialog();
-            this.saveFileDialog1 = new System.Windows.Forms.SaveFileDialog();
+            this.dlgOpen = new System.Windows.Forms.OpenFileDialog();
+            this.dlgSave = new System.Windows.Forms.SaveFileDialog();
             this.menuFile = new System.Windows.Forms.ToolStripMenuItem();
             this.mOpen = new System.Windows.Forms.ToolStripMenuItem();
             this.mSave = new System.Windows.Forms.ToolStripMenuItem();
@@ -44,9 +44,9 @@
             this.menu.TabIndex = 0;
             this.menu.Text = "menuStrip1";
             // 
-            // openFileDialog1
+            // dlgOpen
             // 
-            this.openFileDialog1.FileName = "openFileDialog1";
+            this.dlgOpen.FileName = "openFileDialog1";
             // 
             // menuFile
             // 
@@ -63,6 +63,7 @@
             this.mOpen.Name = "mOpen";
             this.mOpen.Size = new System.Drawing.Size(152, 22);
             this.mOpen.Text = "Abrir";
+            this.mOpen.Click += new System.EventHandler(this.mOpen_Click);
             // 
             // mSave
             // 
@@ -75,14 +76,20 @@
             this.mNew.Name = "mNew";
             this.mNew.Size = new System.Drawing.Size(152, 22);
             this.mNew.Text = "Novo";
+            this.mNew.Click += new System.EventHandler(this.mNew_Click);
             // 
             // textBox
             // 
+            this.textBox.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.textBox.Location = new System.Drawing.Point(0, 27);
             this.textBox.Multiline = true;
             this.textBox.Name = "textBox";
+            this.textBox.ScrollBars = System.Windows.Forms.ScrollBars.Both;
             this.textBox.Size = new System.Drawing.Size(638, 466);
             this.textBox.TabIndex = 1;
+            this.textBox.WordWrap = false;
             // 
             // NewNotepad
             // 
@@ -108,8 +115,8 @@
         private System.Windows.Forms.ToolStripMenuItem mNew;
         private System.Windows.Forms.ToolStripMenuItem mOpen;
         private System.Windows.Forms.ToolStripMenuItem mSave;
-        private System.Windows.Forms.OpenFileDialog openFileDialog1;
-        private System.Windows.Forms.SaveFileDialog saveFileDialog1;
+        private System.Windows.Forms.OpenFileDialog dlgOpen;
+        private System.Windows.Forms.SaveFileDialog dlgSave;
         private System.Windows.Forms.TextBox textBox;
     }
 }
