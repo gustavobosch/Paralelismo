@@ -46,7 +46,11 @@
             // 
             // dlgOpen
             // 
-            this.dlgOpen.FileName = "openFileDialog1";
+            this.dlgOpen.Filter = "Text Files|*.txt|All Files|*.*";
+            // 
+            // dlgSave
+            // 
+            this.dlgSave.Filter = "Text Files|*.txt|All Files|*.*";
             // 
             // menuFile
             // 
@@ -70,6 +74,7 @@
             this.mSave.Name = "mSave";
             this.mSave.Size = new System.Drawing.Size(152, 22);
             this.mSave.Text = "Salvar";
+            this.mSave.Click += new System.EventHandler(this.mSave_Click);
             // 
             // mNew
             // 

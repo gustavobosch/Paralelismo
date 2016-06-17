@@ -27,8 +27,21 @@ namespace Paralelismo {
             }
 
             FileStream fs = new FileStream(dlgOpen.FileName, FileMode.Open, FileAccess.Read);
-            using (StreamReader read = new StreamReader(fs, Encoding.UTF8)){
-                textBox.Text = read.ReadToEnd();
+            using (StreamReader reader = new StreamReader(fs, Encoding.UTF8)){
+                textBox.Text = reader.ReadToEnd();
+            }
+        }
+
+        private void mSave_Click(object sender, EventArgs e) {
+            dlgSave.ShowDialog();
+            if (String.IsNullOrEmpty(dlgSave.FileName)) {
+                MessageBox.Show("Nenhum nome foi especificado");
+                return;
+            }
+
+            FileStream fs = new FileStream(dlgSave.FileName, FileMode.Create, FileAccess.Write);
+            using (StreamWriter writer = new StreamWriter(fs, Encoding.UTF8)) {
+                writer.Write(textBox.Text);
             }
         }
     }
