@@ -24,33 +24,27 @@
         /// </summary>
         private void InitializeComponent() {
             this.menu = new System.Windows.Forms.MenuStrip();
-            this.dlgOpen = new System.Windows.Forms.OpenFileDialog();
-            this.dlgSave = new System.Windows.Forms.SaveFileDialog();
             this.menuFile = new System.Windows.Forms.ToolStripMenuItem();
+            this.mNew = new System.Windows.Forms.ToolStripMenuItem();
             this.mOpen = new System.Windows.Forms.ToolStripMenuItem();
             this.mSave = new System.Windows.Forms.ToolStripMenuItem();
-            this.mNew = new System.Windows.Forms.ToolStripMenuItem();
+            this.dlgOpen = new System.Windows.Forms.OpenFileDialog();
+            this.dlgSave = new System.Windows.Forms.SaveFileDialog();
             this.textBox = new System.Windows.Forms.TextBox();
+            this.menuCancel = new System.Windows.Forms.ToolStripMenuItem();
             this.menu.SuspendLayout();
             this.SuspendLayout();
             // 
             // menu
             // 
             this.menu.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.menuFile});
+            this.menuFile,
+            this.menuCancel});
             this.menu.Location = new System.Drawing.Point(0, 0);
             this.menu.Name = "menu";
             this.menu.Size = new System.Drawing.Size(638, 24);
             this.menu.TabIndex = 0;
             this.menu.Text = "menuStrip1";
-            // 
-            // dlgOpen
-            // 
-            this.dlgOpen.Filter = "Text Files|*.txt|All Files|*.*";
-            // 
-            // dlgSave
-            // 
-            this.dlgSave.Filter = "Text Files|*.txt|All Files|*.*";
             // 
             // menuFile
             // 
@@ -61,6 +55,13 @@
             this.menuFile.Name = "menuFile";
             this.menuFile.Size = new System.Drawing.Size(61, 20);
             this.menuFile.Text = "Arquivo";
+            // 
+            // mNew
+            // 
+            this.mNew.Name = "mNew";
+            this.mNew.Size = new System.Drawing.Size(152, 22);
+            this.mNew.Text = "Novo";
+            this.mNew.Click += new System.EventHandler(this.mNew_Click);
             // 
             // mOpen
             // 
@@ -76,12 +77,13 @@
             this.mSave.Text = "Salvar";
             this.mSave.Click += new System.EventHandler(this.mSave_Click);
             // 
-            // mNew
+            // dlgOpen
             // 
-            this.mNew.Name = "mNew";
-            this.mNew.Size = new System.Drawing.Size(152, 22);
-            this.mNew.Text = "Novo";
-            this.mNew.Click += new System.EventHandler(this.mNew_Click);
+            this.dlgOpen.Filter = "Text Files|*.txt|All Files|*.*";
+            // 
+            // dlgSave
+            // 
+            this.dlgSave.Filter = "Text Files|*.txt|All Files|*.*";
             // 
             // textBox
             // 
@@ -96,6 +98,13 @@
             this.textBox.Size = new System.Drawing.Size(638, 466);
             this.textBox.TabIndex = 1;
             this.textBox.WordWrap = false;
+            // 
+            // menuCancel
+            // 
+            this.menuCancel.Name = "menuCancel";
+            this.menuCancel.Size = new System.Drawing.Size(65, 20);
+            this.menuCancel.Text = "Cancelar";
+            this.menuCancel.Click += new System.EventHandler(this.menuCancel_Click);
             // 
             // NewNotepad
             // 
@@ -124,6 +133,7 @@
         private System.Windows.Forms.OpenFileDialog dlgOpen;
         private System.Windows.Forms.SaveFileDialog dlgSave;
         private System.Windows.Forms.TextBox textBox;
+        private System.Windows.Forms.ToolStripMenuItem menuCancel;
     }
 }
 

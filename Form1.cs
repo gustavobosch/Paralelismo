@@ -6,11 +6,14 @@ using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace Paralelismo {
     public partial class NewNotepad : Form {
+
+        private CancellationTokenSource cancelSource;
 
         public NewNotepad() {
             InitializeComponent();
@@ -30,10 +33,10 @@ namespace Paralelismo {
             }
 
             textBox.Enabled = false;
-
+            cancelSource = new CancellationTokenSource();
             Task backgroundReadTask = new Task(() => {
 
-                string content = NewNotepad.LoadFile(dlgOpen.FileName);
+                string content = NewNotepad.LoadFile(dlgOpen.FileName, cancelSource);
                 NewNotepad.ThreadSafeFormControl(textBox, () => {
                     textBox.Text = (content == null) ? "" : content;
                     textBox.Enabled = true;
@@ -53,9 +56,13 @@ namespace Paralelismo {
             }
 
             Task backgroundWriteTask = new Task(() => {
-                NewNotepad.SaveFile(dlgSave.FileName, textBox.Text);
+                NewNotepad.SaveFile(dlgSave.FileName, textBox.Text, cancelSource);
             });
             backgroundWriteTask.Start();
+        }
+
+        private void menuCancel_Click(object sender, EventArgs e) {
+            cancelSource.Cancel();
         }
 
         private static void ThreadSafeFormControl(Control destControl, Action action) {
@@ -66,7 +73,7 @@ namespace Paralelismo {
             }
         }
 
-        private static string LoadFile(string filename) {
+        private static string LoadFile(string filename, CancellationTokenSource cancelSource) {
             FileStream fs;
             try {
                 fs = new FileStream(filename, FileMode.Open, FileAccess.Read);
@@ -83,8 +90,16 @@ namespace Paralelismo {
 
             try {
                 using (StreamReader reader = new StreamReader(fs, Encoding.UTF8)) {
-                    string text = reader.ReadToEnd();
-                    return text.Substring(0, Math.Min(text.Length, 65536));
+                    StringBuilder builder = new StringBuilder();
+                    char[] buf = new char[128000];
+                    while (!reader.EndOfStream && !cancelSource.IsCancellationRequested) {
+                        int nChars = reader.ReadBlock(buf, 0, 128000);
+                        builder.Append(buf, 0 , nChars);
+                    }
+                    if (cancelSource.IsCancellationRequested) {
+                        return null;
+                    }
+                    return builder.ToString(0, Math.Min(builder.Length, 65536));
                 }
             } catch (IOException ioe) {
                 MessageBox.Show("Erro durante a leitura do arquivo.");
@@ -92,7 +107,7 @@ namespace Paralelismo {
             }
         }
 
-        private static void SaveFile(string filename, string data) {
+        private static void SaveFile(string filename, string data, CancellationTokenSource cancelSource) {
             FileStream fs;
             try {
                 fs = new FileStream(filename, FileMode.Create, FileAccess.Write);
